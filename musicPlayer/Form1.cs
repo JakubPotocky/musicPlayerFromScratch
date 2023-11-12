@@ -32,7 +32,7 @@ namespace musicPlayer
         private void Form1_Load(object sender, EventArgs e)
         {
             comboBox1.Items.Add("Empty");
-            MessageBox.Show("Hello, welcome to ");
+            MessageBox.Show("Hello,\n Welcome to my music player :)\n\nHere is quick guide to this music player.\n1. Click add and select folder which contains .mp3 files you want to load.\n2. After you have done that you can enjoy to very limited settings you can change heh- sound, track, track current position, shuffle(only works once to turn on, cant turn off haha), play/stop, next, previous, Play All button(creates shuffle from all songs you added) close player.");
             //MessageBox.Show($"Output: {xd.Count()}"); //Just checking value
         }
         private void Form1_Click(object sender, EventArgs e)
