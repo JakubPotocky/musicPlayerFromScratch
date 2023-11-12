@@ -159,11 +159,11 @@
             // 
             this.trackBar1.LargeChange = 1;
             this.trackBar1.Location = new System.Drawing.Point(381, 36);
-            this.trackBar1.Maximum = 100;
+            this.trackBar1.Maximum = 20;
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(152, 56);
             this.trackBar1.TabIndex = 11;
-            this.trackBar1.Value = 100;
+            this.trackBar1.Value = 20;
             this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
             // 
             // checkBox1

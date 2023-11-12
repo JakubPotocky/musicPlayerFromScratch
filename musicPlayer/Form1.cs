@@ -22,42 +22,6 @@ namespace musicPlayer
 {
     public partial class Form1 : Form
     {
-        private static DialogResult ShowInputDialog(ref string input)
-        {
-            System.Drawing.Size size = new System.Drawing.Size(200, 70);
-            Form inputBox = new Form();
-
-            inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            inputBox.ClientSize = size;
-            inputBox.Text = "Name";
-
-            System.Windows.Forms.TextBox textBox = new TextBox();
-            textBox.Size = new System.Drawing.Size(size.Width - 10, 23);
-            textBox.Location = new System.Drawing.Point(5, 5);
-            textBox.Text = input;
-            inputBox.Controls.Add(textBox);
-
-            Button okButton = new Button();
-            okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            okButton.Name = "okButton";
-            okButton.Size = new System.Drawing.Size(75, 23);
-            okButton.Text = "&OK";
-            okButton.Location = new System.Drawing.Point(size.Width - 80 - 80, 39);
-            inputBox.Controls.Add(okButton);
-
-            Button cancelButton = new Button();
-            cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            cancelButton.Name = "cancelButton";
-            cancelButton.Size = new System.Drawing.Size(75, 23);
-            cancelButton.Text = "&Cancel";
-            cancelButton.Location = new System.Drawing.Point(size.Width - 80, 39);
-            inputBox.Controls.Add(cancelButton);
-            inputBox.AcceptButton = okButton;
-            inputBox.CancelButton = cancelButton;
-            DialogResult result = inputBox.ShowDialog();
-            input = textBox.Text;
-            return result;
-        }
 
         string xd;
         int totalAdded = 0;
@@ -68,9 +32,8 @@ namespace musicPlayer
         private void Form1_Load(object sender, EventArgs e)
         {
             comboBox1.Items.Add("Empty");
-            MessageBox.Show("Welcome to my mp3 player,\nHere is quick guide how to use it:\nMake sure you have: 1 main folder in which there are all other folders(playlists) you want to have in this music player, which contains only .mp3 files, it wont load other files.\n1. Make sure your playlists are in 1 folder which path you will have to enter after clicking -OK-\n2. All songs you want to have in the music player must be .mp3 file type.\n3. While adding playlist make sure they are in that folder you are about to paste here.\n4. Folders with 80+ files will take about a minute to load, but be carefull- folders with 200 songs will load for 5 minutes approx.");
-            ShowInputDialog(ref xd); 
-            MessageBox.Show($"Output: {xd.Count()}");
+            MessageBox.Show("Hello, welcome to ");
+            //MessageBox.Show($"Output: {xd.Count()}"); //Just checking value
         }
         private void Form1_Click(object sender, EventArgs e)
         { }
@@ -212,29 +175,23 @@ namespace musicPlayer
             }
             ///play all function from playlist1 pls urob
         }
+        string lastFolderName;
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
             using (var folderDialog = new FolderBrowserDialog())
             {
-                folderDialog.Description = "Vyber playlist z ''FINAL Juice WRLD''";
+                folderDialog.Description = "Select specific playlist from folder you entered at the start ONLY!";
                 if (folderDialog.ShowDialog() == DialogResult.OK)
                 {
                     string folderPath = folderDialog.SelectedPath;
+                    lastFolderName = new DirectoryInfo(folderPath).Name;
                     LoadMp3FilesFromFolder(folderPath);
                 }
             }
 
         }
-        string GetDifferingCharacters(string str1)
-        {
-            string differingChars = "";
-            for (int i = (xd.Count()+1); i < str1.Length; i++)// VYNIMOCNE POUZITE NA TENTO FOLDER (str.lenght--- 40)
-            {
-                    differingChars += str1[i];
-            }
-            return differingChars;
-        }
+
         private void LoadMp3FilesFromFolder(string folderPath) //async pouzi?** na lepsie nacitavanie
         {
             if (!Directory.Exists(folderPath))
@@ -243,13 +200,12 @@ namespace musicPlayer
                 return;
             }
 
-            string compare = @"C:\Users\jakub\Desktop\FINAL Juice WRLD\"; //uz viacmenej netreba lebo pouzivam staticke cisla
-            string playlistName = GetDifferingCharacters(folderPath); ///playlist-40 song-48
+            //string playlistName = GetDifferingCharacters(folderPath); ///playlist-40 song-48
             ///playlist == null; zatial kym tomu nepriradim nazov, potom pesnicky v foreach loope
             string[] mp3Files = Directory.GetFiles(folderPath, "*.mp3"); ///zoberie fily do stringu (mp3 fily / iba ich cestu)
             Player.currentPlaylist.clear(); ///(vycisty playlist)
-            playlist = Player.newPlaylist(playlistName, "");/// TOTO BOLO ZADEFINOVANE TAM(XD!)  ///vytvori playlist s nazvom
-            comboBox1.Items.Add(playlistName); /// do comboboxu da na vyber playlist
+            playlist = Player.newPlaylist(lastFolderName, "");/// TOTO BOLO ZADEFINOVANE TAM(XD!)  ///vytvori playlist s nazvom
+            comboBox1.Items.Add(lastFolderName); /// do comboboxu da na vyber playlist
             foreach (string mp3File in mp3Files) ///precita vsetky fily postupne
             {
                 WMPLib.IWMPMedia media = Player.newMedia(mp3File); ///media premenna je na citanie
@@ -370,7 +326,7 @@ namespace musicPlayer
                     }
                     else
                     {
-                        MessageBox.Show("Nejde to :/");
+                        MessageBox.Show("Something went wrong :/");
                     }
                 }
                 for (int i = currentSongIndex; i < Player.currentPlaylist.count-1; i++) /// toto cita z playeru fily po jednom a zapisuje ich
