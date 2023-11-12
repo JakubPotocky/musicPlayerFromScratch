@@ -23,7 +23,6 @@ namespace musicPlayer
     public partial class Form1 : Form
     {
 
-        string xd;
         int totalAdded = 0;
         int totalIndex = 0;
         WMPLib.IWMPPlaylist playlist; /// TOTO BOLO ZADEFINOVANE TU(XD!) VELMI DOLE
