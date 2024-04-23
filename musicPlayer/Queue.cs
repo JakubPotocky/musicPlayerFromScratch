@@ -4,6 +4,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.Design;
 
 namespace musicPlayer
 {
@@ -14,7 +15,7 @@ namespace musicPlayer
 
         public List<Song> NextQ;
         public int Position;
-        private int maxPos;
+        public int maxPos;
         public Queue()
         {
             q = new List<Song>();
@@ -87,6 +88,18 @@ namespace musicPlayer
                 q.Remove(s);
                 return;
             }
+        }
+        public int GetIndex(string songName) 
+        {
+            int temp = 0;
+            foreach(Song s in q) 
+            {
+                if (s.name == songName)
+                    return temp;
+
+                temp++;
+            }
+            return -1;
         }
 
 

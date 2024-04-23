@@ -30,7 +30,7 @@ namespace musicPlayer
         {
             comboBox1.Items.Add("Empty");
             comboBox1.SelectedIndex = 0;
-            MessageBox.Show("Hello,\n Welcome to my music player :)\n\nHere is quick guide to this music player.\n1. Click add and select folder which contains .mp3 files you want to load.\n2. After you have done that you can enjoy to very limited settings you can change heh- sound, track, track current position, shuffle(only works once to turn on, cant turn off haha), play/stop, next, previous, Play All button(creates shuffle from all songs you added) close player.");
+            MessageBox.Show("Hello,\n Welcome to my music player :)\n\nHere is quick guide to this music player.\n1. Click add and select folder which contains .mp3 files you want to load.\n2. After you have done that you can select it in dropbox and then click start which will start playing the album, other working features: play/stop, next, previous, close player.");
             //MessageBox.Show($"Output: {xd.Count()}"); //Just checking value
         }
         private void Form1_Click(object sender, EventArgs e)
@@ -63,7 +63,7 @@ namespace musicPlayer
         }
         ///======================================================= FROM NOW ON CODE STARTS
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        { ///selecting from dropbox
             listBox1.Items.Clear();
             if(comboBox1.SelectedIndex != 0)
             { 
@@ -105,7 +105,7 @@ namespace musicPlayer
             if(comboBox1.SelectedIndex != 0)
             {
                 if (playlist != null)
-                {
+                { ///reset everything so the program can load new playlist
                     playlist.clear();
                     Player.currentPlaylist.clear();
 
@@ -118,12 +118,12 @@ namespace musicPlayer
                 int sel = comboBox1.SelectedIndex - 1;
                 Playlist selectedPlaylist = Playlist.GetPlaylist(sel);
 
-                playlist = Player.newPlaylist(selectedPlaylist.playlistName, "");
+                playlist = Player.newPlaylist(selectedPlaylist.playlistName, ""); ///this loads somehow the playlist into the player
 
-                que.CreateQueue(selectedPlaylist);
+                que.CreateQueue(selectedPlaylist); ///create queue from playlist
                 
-                foreach(Song s in que.q)
-                {
+                foreach(Song s in que.q) 
+                { ///each song is added to playlist in order +to show them in listbox 2 and 3
                     IWMPMedia media = Player.newMedia(s.location);
                     playlist.appendItem(media);
 
@@ -132,10 +132,9 @@ namespace musicPlayer
                     listBox3.Items.Add(s.name); //add songs from queue/direct playlist to last listbox
                 }
 
-                MessageBox.Show("Start");
+                ///play the playlist
                 Player.currentPlaylist = playlist;
                 Player.Ctlcontrols.play();
-                MessageBox.Show("Should be playing");
             }
             else
                 label4.Text = @"Please select playlist and then click *Start* button.";
@@ -228,7 +227,11 @@ namespace musicPlayer
                 string currentSongName = Player.currentMedia.name;
                 label4.Text = currentSongName;
 
-                listBox2.SelectedIndex = que.Position;
+                int temp = que.GetIndex(currentSongName);
+                if (temp != -1)
+                    listBox2.SelectedIndex = temp;
+                else
+                    MessageBox.Show("Error 234");
             }
             else
             {
