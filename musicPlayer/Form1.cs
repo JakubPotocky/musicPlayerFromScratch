@@ -16,21 +16,20 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using WMPLib;
+using static System.Windows.Forms.Design.AxImporter;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace musicPlayer
 {
     public partial class Form1 : Form
     {
-
-        int totalAdded = 0;
-        int totalIndex = 0;
         WMPLib.IWMPPlaylist playlist; /// TOTO BOLO ZADEFINOVANE TU(XD!) VELMI DOLE
         public Form1()
         {InitializeComponent();}
         private void Form1_Load(object sender, EventArgs e)
         {
             comboBox1.Items.Add("Empty");
+            comboBox1.SelectedIndex = 0;
             MessageBox.Show("Hello,\n Welcome to my music player :)\n\nHere is quick guide to this music player.\n1. Click add and select folder which contains .mp3 files you want to load.\n2. After you have done that you can enjoy to very limited settings you can change heh- sound, track, track current position, shuffle(only works once to turn on, cant turn off haha), play/stop, next, previous, Play All button(creates shuffle from all songs you added) close player.");
             //MessageBox.Show($"Output: {xd.Count()}"); //Just checking value
         }
@@ -62,44 +61,17 @@ namespace musicPlayer
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
         }
+        ///======================================================= FROM NOW ON CODE STARTS
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             listBox1.Items.Clear();
-
-            int selectedIndex = comboBox1.SelectedIndex - 1;
-            if (Playlist1 != null && selectedIndex != 0 && selectedIndex != -1)
-            {
-                int startValue = lastIndex[selectedIndex - 1];
-                int endValue = lastIndex[selectedIndex];
-
-                for (int i = startValue + 1; i <= endValue; i++)
+            if(comboBox1.SelectedIndex != 0)
+            { 
+                int sel = comboBox1.SelectedIndex-1;
+                Playlist selectedPlaylist = Playlist.GetPlaylist(sel);
+                foreach (Song song in selectedPlaylist.songs)
                 {
-                    if (Playlist1.TryGetValue(i, out var song))
-                    {
-                        string songName = song.Item1;
-                        string songURL = song.Item2;
-                        listBox1.Items.Add(songName);
-                    }
-                    else
-                    {
-                        listBox1.Items.Add("Nejde to :/");
-                    }
-                }
-            }
-            if (Playlist1 != null && selectedIndex == 0)
-            {
-                for (int i = 0; i <= lastIndex[0]; i++)
-                {
-                    if (Playlist1.TryGetValue(i, out var song))
-                    {
-                        string songName = song.Item1;
-                        string songURL = song.Item2;
-                        listBox1.Items.Add(songName);
-                    }
-                    else
-                    {
-                        listBox1.Items.Add("Doesnt work :/");
-                    }
+                    listBox1.Items.Add(song.name);
                 }
             }
         }
@@ -108,6 +80,7 @@ namespace musicPlayer
             e.Handled = true;
         }
 
+        /// This should be fine for playing and stop playing
         bool playing = true;
         private void btnSS_Click(object sender, EventArgs e)
         {
@@ -123,254 +96,150 @@ namespace musicPlayer
             }
 
         }
+        ///=================================================
 
+        Queue que = new Queue();
         private void btnStart_Click(object sender, EventArgs e)
         {
-            Player.URL = @"C:\\Users\\jakub\\Desktop\\FINAL Juice WRLD\\Juice wrld\\Juice WRLD - californication.mp3";
+            ///Start button
+            if(comboBox1.SelectedIndex != 0)
+            {
+                if (playlist != null)
+                {
+                    playlist.clear();
+                    Player.currentPlaylist.clear();
+
+                    listBox2.Items.Clear();
+                    listBox3.Items.Clear();
+
+                    que.Position = 0;
+                }
+
+                int sel = comboBox1.SelectedIndex - 1;
+                Playlist selectedPlaylist = Playlist.GetPlaylist(sel);
+
+                playlist = Player.newPlaylist(selectedPlaylist.playlistName, "");
+
+                que.CreateQueue(selectedPlaylist);
+                
+                foreach(Song s in que.q)
+                {
+                    IWMPMedia media = Player.newMedia(s.location);
+                    playlist.appendItem(media);
+
+                    listBox2.Items.Add(s.name); //add songs from queue to middle listbox
+
+                    listBox3.Items.Add(s.name); //add songs from queue/direct playlist to last listbox
+                }
+
+                MessageBox.Show("Start");
+                Player.currentPlaylist = playlist;
+                Player.Ctlcontrols.play();
+                MessageBox.Show("Should be playing");
+            }
+            else
+                label4.Text = @"Please select playlist and then click *Start* button.";
+
         }
 
+
+        ///====================== VOLUME EDITOR =====================================================
         int volume;
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
             volume = trackBar1.Value;
             Player.settings.volume = volume;
         }
+        ///==========================================================================================
 
-        Dictionary<int, (string, string)> Playlist1 = new Dictionary<int, (string, string)>();
-        List<int> lastIndex = new List<int>();
 
-        Dictionary<int, (string, string)> Playlist2 = new Dictionary<int, (string, string)>();
-
-    private void btnSaveSettings_Click(object sender, EventArgs e)
-        {
-            listBox2.Items.Clear();
-            foreach (var kvp in Playlist1)
-            {
-                Playlist2.Add(kvp.Key, kvp.Value);
-            }
-            Random rnd = new Random();
-            int totalPesnickyIndex = Playlist2.Count;
-
-            List<int> keys = new List<int>(Playlist2.Keys);
-
-            playlist.clear();
-
-            for (int i = totalPesnickyIndex - 1; i >= 0; i--)
-            {
-                int randomIndex = rnd.Next(0, keys.Count);
-                int takeIndex = keys[randomIndex];
-
-                if (Playlist2.TryGetValue(takeIndex, out var song))
-                {
-                    string songName = song.Item1;
-                    string songURL = song.Item2;
-                    listBox2.Items.Add(songName);
-                    Playlist2.Remove(takeIndex);
-                    keys.RemoveAt(randomIndex);
-                    IWMPMedia media = Player.newMedia(songURL);
-                    playlist.appendItem(media);///okej dostal som to ale neviem ako to dat do poradia(takto nie)
-                }
-                Player.Ctlcontrols.play();
-            }
-            ///play all function from playlist1 pls urob
+        private void btnSaveSettings_Click(object sender, EventArgs e)
+        { /// this is "Play All" button
+           
         }
-        string lastFolderName;
 
+        /// Adding new playlist
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            using (var folderDialog = new FolderBrowserDialog())
-            {
-                folderDialog.Description = "Select specific playlist from folder you entered at the start ONLY!";
-                if (folderDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string folderPath = folderDialog.SelectedPath;
-                    lastFolderName = new DirectoryInfo(folderPath).Name;
-                    LoadMp3FilesFromFolder(folderPath);
-                }
-            }
-
+            new Playlist();
+            comboBox1.Items.Add(Playlist.GetLastPlaylist().playlistName);
         }
+        ///=================================================
+        /**     Cool stuff here:
+                listBox2.Items.Add(songName);
 
-        private void LoadMp3FilesFromFolder(string folderPath) //async pouzi?** na lepsie nacitavanie
-        {
-            if (!Directory.Exists(folderPath))
-            {
-                MessageBox.Show("The specified folder does not exist.XDXD");
-                return;
-            }
-
-            //string playlistName = GetDifferingCharacters(folderPath); ///playlist-40 song-48
-            ///playlist == null; zatial kym tomu nepriradim nazov, potom pesnicky v foreach loope
-            string[] mp3Files = Directory.GetFiles(folderPath, "*.mp3"); ///zoberie fily do stringu (mp3 fily / iba ich cestu)
-            Player.currentPlaylist.clear(); ///(vycisty playlist)
-            playlist = Player.newPlaylist(lastFolderName, "");/// TOTO BOLO ZADEFINOVANE TAM(XD!)  ///vytvori playlist s nazvom
-            comboBox1.Items.Add(lastFolderName); /// do comboboxu da na vyber playlist
-            foreach (string mp3File in mp3Files) ///precita vsetky fily postupne
-            {
-                WMPLib.IWMPMedia media = Player.newMedia(mp3File); ///media premenna je na citanie
-                playlist.appendItem(media); ///prida do "poradia" viacmenej
-            }
-            Player.currentPlaylist = playlist; /// zada playeru playlist co teraz vytvoril; PREMENNA PLAYLIST MOZE SLUZIT MOZNO NA PREPINANIE PLAYLISTOV
-            if (Player.currentPlaylist != null)
-            {
-                for (int i = 0; i < Player.currentPlaylist.count; i++) /// toto cita z playeru fily po jednom a zapisuje ich
-                {
-                    WMPLib.IWMPMedia media = Player.currentPlaylist.get_Item(i); ///precita hodnotu z currentPlaylist a zapise do media
-                    string mediaName = media.name;
-                    string mediaSourceURL = media.sourceURL;
-                    Playlist1.Add((totalAdded), (mediaName, mediaSourceURL));
-                    totalAdded++;
-                }
-                lastIndex.Add(Player.currentPlaylist.count - 1 + totalIndex);///Na zapis vsetkych indexov potrebujes pripocitat celkovu hodnotu ktra sa stale meni :skull:
-                totalIndex += Player.currentPlaylist.count;
-            }
-            else
-            {
-                MessageBox.Show("No songs selected.");
-            }
-            foreach (var songToUrl in Playlist1)
-            {
-                reverseLookup[songToUrl.Value.Item1] = songToUrl.Value.Item2;
-            }
-        }
-
-        Dictionary<string, string> reverseLookup = new Dictionary<string, string>();
+                IWMPMedia media = Player.newMedia(songURL);
+                playlist.appendItem(media);
+                Player.Ctlcontrols.play();
+         */
+        
+        /// Next song ===================================
         private void btnNext_Click(object sender, EventArgs e)
         {
+            que.PlayNext();
             Player.Ctlcontrols.next();
-
-            if (Player.currentMedia != null)
-            {
-                string currentSongName = Player.currentMedia.name;
-                label4.Text = currentSongName;
-                //refreshQ(); // queue nefunguje- dobre, iba indexovanie na prvom playliste XD
-            }
-            else
-            {
-                Console.WriteLine("Nothing playing now...");
-            }
         }
+        ///=====================================
 
+        /// Last song ========================
         private void btnPrev_Click(object sender, EventArgs e)
         {
+            que.PlayLast();
             Player.Ctlcontrols.previous();
-
-            if (Player.currentMedia != null)
-            {
-                string currentSongName = Player.currentMedia.name;
-                label4.Text = currentSongName;
-            }
-            else
-            {
-                Console.WriteLine("Nothing playing now...");
-            }
         }
+        /// ==============================================
 
+
+        /// I hope this stuff works as it should
         bool isRnd = false;
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            if(!isRnd)
+            if(isRnd)
             {
                 Player.settings.setMode("shuffle", true);
-                isRnd = true;
             }
-            if (isRnd)
+            else //if(!isRnd)
             {
                 Player.settings.setMode("shuffle", false);
                 isRnd = false;
             }
-
+            if(isRnd)
+            {
+                isRnd = true;
+            }
+            
+        }
+        /// =================================================
+        private void checkBox1_CheckStateChanged(object sender, EventArgs e)
+        {
+            //THIS WAS EMPTY!!!!! shuffle on off checkmark?
         }
 
         private void listBox1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            
+            //play specific song from listbox1
         }
 
-        private void checkBox1_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (Player.currentMedia != null)
-            {
-                string currentSong = listBox1.Text;
-                if (reverseLookup.TryGetValue(currentSong, out string url))
-                {
-                    Player.URL = url;
-                    label4.Text = listBox1.Text;
-                }
-            }
-        }
-
-        int currentSongIndex = 0;
-        int playlistNumber;
-        public void refreshQ()
-        {
-            if (playlist != null && Playlist1 != null)
-            {
-                listBox2.Items.Clear();
-                string currentSongName = Player.currentMedia.name;
-                for(int i = 0; i < Playlist1.Count; i++) 
-                {
-                    if (Playlist1.TryGetValue(i, out var song))
-                    {
-                        string songName = song.Item1;
-                        if(currentSongName == songName)
-                        {
-                            currentSongIndex = i;
-                            isCloseTo(); ///
-                            if (lastIndex.Count == 2)
-                            {
-                                //MessageBox.Show("Output: " + playlistNumber.ToString() + "\nlastIndex0: " + lastIndex[0].ToString() + "\nlastIndex1:" + lastIndex[1].ToString());
-                            }
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Something went wrong :/");
-                    }
-                }
-                for (int i = currentSongIndex; i < Player.currentPlaylist.count-1; i++) /// toto cita z playeru fily po jednom a zapisuje ich
-                {                                         /// tu plus a minus 1 aby sa to vyrovnalo
-                    WMPLib.IWMPMedia media = Player.currentPlaylist.get_Item(i+1); ///precita hodnotu z currentPlaylist a zapise do media
-                    listBox2.Items.Add(media.name);
-                }
-            }
-        }
-
-        public void isCloseTo()
-        {
-            if (lastIndex[0] <= currentSongIndex)
-            {
-                playlistNumber = 0;
-            }
-            else
-            {
-                for (int i = 0; i < lastIndex.Count - 1; i++) ///potrebujem zistit kde sa nachadza aby som mohol upravit vypis
-                {
-                    if (currentSongIndex < lastIndex[0])
-                    {
-                        playlistNumber = i + 1;
-                    }
-
-                    if (currentSongIndex >= lastIndex[i] && currentSongIndex < lastIndex[i + 1])
-                    {
-                        playlistNumber = i + 1;
-                    }
-                }
-            }
-
-        }
-
-        private void Player_MediaChange(object sender, _WMPOCXEvents_MediaChangeEvent e)
+        /// write what song is currently playing
+        private void Player_MediaChange(object sender, _WMPOCXEvents_MediaChangeEvent e) //no need to change anything here
         {
             if (Player.currentMedia != null)
             {
                 string currentSongName = Player.currentMedia.name;
                 label4.Text = currentSongName;
+
+                listBox2.SelectedIndex = que.Position;
             }
             else
             {
                 Console.WriteLine("Nothing playing now...");
             }
+        }
+        /// ======================================
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
