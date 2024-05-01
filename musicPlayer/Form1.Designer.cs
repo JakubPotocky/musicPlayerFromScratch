@@ -36,10 +36,10 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.listBox3 = new System.Windows.Forms.ListBox();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnSaveSettings = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.btnPrev = new System.Windows.Forms.Button();
             this.btnNext = new System.Windows.Forms.Button();
             this.btnSS = new System.Windows.Forms.Button();
@@ -52,6 +52,7 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -98,6 +99,7 @@
             this.listBox2.Name = "listBox2";
             this.listBox2.Size = new System.Drawing.Size(409, 580);
             this.listBox2.TabIndex = 1;
+            this.listBox2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDoubleClick);
             // 
             // panel3
             // 
@@ -120,10 +122,11 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.DimGray;
+            this.panel4.Controls.Add(this.button2);
+            this.panel4.Controls.Add(this.button1);
             this.panel4.Controls.Add(this.btnSaveSettings);
             this.panel4.Controls.Add(this.btnStart);
             this.panel4.Controls.Add(this.trackBar1);
-            this.panel4.Controls.Add(this.checkBox1);
             this.panel4.Controls.Add(this.btnPrev);
             this.panel4.Controls.Add(this.btnNext);
             this.panel4.Controls.Add(this.btnSS);
@@ -135,13 +138,23 @@
             this.panel4.Size = new System.Drawing.Size(1256, 78);
             this.panel4.TabIndex = 4;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(9, 39);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(114, 33);
+            this.button1.TabIndex = 14;
+            this.button1.Text = "Like Song";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // btnSaveSettings
             // 
-            this.btnSaveSettings.Location = new System.Drawing.Point(1023, 10);
+            this.btnSaveSettings.Location = new System.Drawing.Point(1054, 10);
             this.btnSaveSettings.Name = "btnSaveSettings";
-            this.btnSaveSettings.Size = new System.Drawing.Size(106, 23);
+            this.btnSaveSettings.Size = new System.Drawing.Size(75, 23);
             this.btnSaveSettings.TabIndex = 13;
-            this.btnSaveSettings.Text = "Play all";
+            this.btnSaveSettings.Text = "Shuffle";
             this.btnSaveSettings.UseVisualStyleBackColor = true;
             this.btnSaveSettings.Click += new System.EventHandler(this.btnSaveSettings_Click);
             // 
@@ -165,18 +178,6 @@
             this.trackBar1.TabIndex = 11;
             this.trackBar1.Value = 20;
             this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(710, 42);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(69, 20);
-            this.checkBox1.TabIndex = 10;
-            this.checkBox1.Text = "Shuffle";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            this.checkBox1.CheckStateChanged += new System.EventHandler(this.checkBox1_CheckStateChanged);
             // 
             // btnPrev
             // 
@@ -323,6 +324,16 @@
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(129, 40);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(111, 32);
+            this.button2.TabIndex = 15;
+            this.button2.Text = "Play All Liked";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -382,10 +393,11 @@
         private AxWMPLib.AxWindowsMediaPlayer Player;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnSaveSettings;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
 

@@ -31,6 +31,11 @@ namespace musicPlayer
             EveryPlaylist.Add(this);
         }
 
+        public Song GetSong(int id)
+        {
+            return songs[id];
+        }
+
         public static Playlist GetPlaylist(int id)
         {
             foreach(Playlist playlist in EveryPlaylist) 

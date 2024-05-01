@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "musicPlayer", "musicPlayer\musicPlayer.csproj", "{56E2D7FF-D150-4FA2-9061-B6D75DBC3847}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MusicPlayerInstaller", "MusicPlayerInstaller\MusicPlayerInstaller.vdproj", "{80B39B41-1D8A-46DA-B246-89C6848EBC63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{56E2D7FF-D150-4FA2-9061-B6D75DBC3847}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56E2D7FF-D150-4FA2-9061-B6D75DBC3847}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56E2D7FF-D150-4FA2-9061-B6D75DBC3847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80B39B41-1D8A-46DA-B246-89C6848EBC63}.Debug|Any CPU.ActiveCfg = Debug
+		{80B39B41-1D8A-46DA-B246-89C6848EBC63}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

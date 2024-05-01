@@ -34,24 +34,40 @@ namespace musicPlayer
             maxPos = q.Count() - 1;
         }
 
+        public void ClearQueue() 
+        {
+            q.Clear(); 
+        }
+        public void Shuffle()
+        {
+            int temp = q.Count()-1;
+            List<Song> tempQ = q.ToList();
+            q.Clear();
+            Random rnd = new Random();
+            for(int i = temp; i >= 0; i--) 
+            {
+                int newIndex = rnd.Next(0, i+1);
+                q.Add(tempQ[newIndex]);
+                tempQ.RemoveAt(newIndex);
+            }
+        }
+
         public Song PlayNext()
         {
-            if(NextQ.Count > 0)
+            if(q.Count > 0)
             {
-                Song s = NextQ[NextQ.Count-1];
-                NextQ.RemoveAt(NextQ.Count-1);
+                Position++;
+                if (Position > maxPos)
+                {
+                    Position = 0;
+                }
+
+                Song s = q[Position];
                 return s;
             }
             else
             {
-                Position++;
-                if (Position > maxPos)
-                { 
-                    Position = 0;
-                }
-                
-                Song s = q[Position];
-                return s;
+                return null;
             }
         }
 
@@ -70,9 +86,13 @@ namespace musicPlayer
             NextQ.Add(s);
         }
 
-        public void AddToQueueBack(Song s)
+        public void AddToQueue(int index, Song s)
         {
-            NextQ.Insert(0, s);
+            q.Insert(index, s);
+        }
+        public void AddToQueueLast(Song s)
+        {
+            q.Add(s);
         }
 
         public void RemoveFromQueue(Song s) 
@@ -86,6 +106,7 @@ namespace musicPlayer
             else if(q.Contains(s))
             {
                 q.Remove(s);
+                maxPos--;
                 return;
             }
         }
@@ -100,6 +121,16 @@ namespace musicPlayer
                 temp++;
             }
             return -1;
+        }
+
+        public Song GetSong(string songName)
+        {
+            foreach (Song s in Song.AllSongs)
+            {
+                if (s.name == songName)
+                    return s;
+            }
+            return null;
         }
 
 
